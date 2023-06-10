@@ -201,7 +201,10 @@ require('lazy').setup({
   --    up-to-date with whatever is in the kickstart repo.
   --
   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-  { import = 'custom.plugins' },
+  --
+  --    An additional note is that if you only copied in the `init.lua`, you can just comment this line
+  --    to get rid of the warning telling you that there are not plugins in `lua/custom/plugins/`.
+  --  { import = 'custom.plugins' },
 }, {})
 
 -- [[ Setting options ]]
@@ -308,7 +311,7 @@ require('nvim-treesitter.configs').setup {
   ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim' },
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
-  auto_install = false,
+  auto_install = true,
 
   highlight = { enable = true },
   indent = { enable = true, disable = { 'python' } },
@@ -402,7 +405,7 @@ local on_attach = function(_, bufnr)
 
   -- See `:help K` for why this keymap
   nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
-  nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
+  nmap('<c-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
 
   -- Lesser used LSP functionality
   nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
@@ -424,11 +427,11 @@ end
 --  Add any additional override configuration in the following tables. They will be passed to
 --  the `settings` field of the server config. You must look up that documentation yourself.
 local servers = {
-  clangd = {},
+  -- clangd = {},
   -- gopls = {},
-  pyright = {},
+  -- pyright = {},
   -- rust_analyzer = {},
-  tsserver = {},
+  -- tsserver = {},
 
   lua_ls = {
     Lua = {
@@ -510,32 +513,62 @@ cmp.setup {
   },
 }
 
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
+vim.keymap.set("n", "J", "mzJ`z")
+vim.keymap.set("n", "<C-d>", "<C-d>zz")
+vim.keymap.set("n", "<C-u>", "<C-u>zz")
+vim.keymap.set("n", "n", "nzzzv")
+vim.keymap.set("n", "N", "Nzzzv")
+vim.keymap.set("x", "<leader>p", [["_dP]])
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
+vim.keymap.set("n", "<leader>Y", [["+Y]])
+vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
+vim.keymap.set("i", "<C-c>", "<Esc>")
+vim.keymap.set("n", "<C-f>", "<cmd>silent !tmux neww tmux-sessionizer<CR>")
+vim.keymap.set("n", "<leader>f", ":Format")
+vim.keymap.set("n", "<C-k>", "<cmd>cnext<CR>zz")
+vim.keymap.set("n", "<C-j>", "<cmd>cprev<CR>zz")
+vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
+vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
+vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
+vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
+vim.keymap.set("n", "<leader>o", "<cmd>!xdg-open %<CR>", { silent = true })
+vim.keymap.set("n", "<leader>n", ":bnext<CR>")
+vim.keymap.set("n", "<leader>p", ":bprevious<CR>")
+vim.keymap.set("n", "<leader>d", ":bdelete<CR>")
+
+vim.opt.scrolloff = 8
+vim.opt.isfname:append("@-@")
+vim.opt.relativenumber = true
+vim.opt.incsearch = true
+
 -- theme setup
 require("catppuccin").setup({
-  flavour = "mocha",   -- latte, frappe, macchiato, mocha
+  flavour = "mocha", -- latte, frappe, macchiato, mocha
   background = {
-                       -- :h background
+    -- :h background
     light = "latte",
     dark = "mocha",
   },
-  transparent_background = true,   -- disables setting the background color.
-  show_end_of_buffer = false,      -- shows the '~' characters after the end of buffers
-  term_colors = false,             -- sets terminal colors (e.g. `g:terminal_color_0`)
+  transparent_background = true, -- disables setting the background color.
+  show_end_of_buffer = true,     -- shows the '~' characters after the end of buffers
+  term_colors = true,            -- sets terminal colors (e.g. `g:terminal_color_0`)
   dim_inactive = {
-    enabled = false,               -- dims the background color of inactive window
+    enabled = false,             -- dims the background color of inactive window
     shade = "dark",
-    percentage = 0.15,             -- percentage of the shade to apply to the inactive window
+    percentage = 0.15,           -- percentage of the shade to apply to the inactive window
   },
-  no_italic = false,               -- Force no italic
-  no_bold = false,                 -- Force no bold
-  no_underline = false,            -- Force no underline
+  no_italic = false,             -- Force no italic
+  no_bold = false,               -- Force no bold
+  no_underline = false,          -- Force no underline
   styles = {
-                                   -- Handles the styles of general hi groups (see `:h highlight-args`):
-    comments = { "italic" },       -- Change the style of comments
+    -- Handles the styles of general hi groups (see `:h highlight-args`):
+    comments = { "italic" }, -- Change the style of comments
     conditionals = { "italic" },
     loops = {},
-    functions = {},
-    keywords = {},
+    functions = { "italic" },
+    keywords = { "italic" },
     strings = {},
     variables = {},
     numbers = {},
@@ -559,10 +592,6 @@ require("catppuccin").setup({
 
 -- setup must be called before loading
 vim.cmd.colorscheme "catppuccin"
-
-vim.keymap.set("n", "<Leader>f", function()
-  vim.lsp.buf.format({ async = true })
-end, { buffer = bufnr })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
