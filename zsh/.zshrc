@@ -123,7 +123,9 @@ alias gw='./gradlew'
 alias gapf='git add --all && git commit --amend --no-edit && git push origin "$(git_current_branch)" -f'
 alias gaaa='git add --all && git commit --amend --no-edit'
 
-alias l='ls -lha'
+alias l='eza -la --classify'
+alias lt='eza -l --tree --only-dirs --level 2 --classify'
+alias lg='eza -la --git --git-ignore'
 
 # pnpm
 export PNPM_HOME="/Users/lainovic/Library/pnpm"
